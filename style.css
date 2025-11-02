@@ -1,0 +1,151 @@
+/* --- CSS Variables for Theme and Colors --- */
+
+:root {
+    --bg-primary: #0a0814; /* Deep Indigo Dark Background (Body) */
+    --bg-secondary: #1f1d2b; /* Card/Container Background (Cards/Controls) */
+    --bg-tertiary: #3a384f; /* Input/Step Background */
+    --text-primary: #f0f4f8; /* Off-White Text */
+    --text-secondary: #a3a3b0;
+    --accent: #9333ea; /* Primary Accent: Deep Purple/Indigo */
+    --accent-hover: #7e22ce;
+    --border: #524f6a;
+    --red-node: #ff6b6b; /* Vibrant Red */
+    --black-node: #3d3a4f; /* Dark Node Color */
+    --null-node: #6e6c80;
+    
+    /* FIX: Subheading color separate for visibility */
+    --secondary-subheading-color: #d8b4fe;
+
+    /* Custom Button Colors */
+    --insert-btn: #34d399; 
+    --delete-btn: #f87171; 
+    --clear-btn: #5bc0de;
+    --step-btn: #facc15; 
+
+    --violation-color-dark: #ff6b6b;
+    --violation-color-light: #dc2626;
+    --stat-value-color-dark: var(--red-node);
+}
+
+/* Light Theme override for visibility */
+.light-theme {
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --accent: #9333ea;
+    --accent-hover: #7e22ce;
+    --border: #ced4da;
+    --red-node: #ef4444;
+    --black-node: #343a40;
+    --null-node: #adb5bd;
+    
+    --stat-value-color-light: #1a1a1a; 
+    --secondary-subheading-color: #6d28d9;
+}
+
+/* --- Global Styles and Utility Class Overrides --- */
+
+body {
+    background-color: var(--bg-primary); 
+    transition: background-color 0.3s;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; 
+}
+.container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.25rem;
+}
+
+/* Header Gradient and Subheading Fix */
+.header-gradient {
+    background: linear-gradient(135deg, var(--accent), #d8b4fe); 
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.text-secondary-subheading {
+    color: var(--secondary-subheading-color);
+}
+
+/* Toggle Switch Styles */
+.toggle {
+    position: relative;
+    width: 50px;
+    height: 26px;
+    background: var(--border);
+    border-radius: 13px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.toggle.active { background: var(--accent); }
+.toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+.toggle.active::after { transform: translateX(24px); }
+
+.step-item.active { border-color: var(--step-btn) !important; background: #4a4e6980; }
+.violation { color: var(--violation-color-dark); font-weight: bold; }
+
+/* Statistics Color Overrides */
+.stat-item .value { color: var(--stat-value-color-dark); }
+.light-theme .stat-item .value { color: var(--stat-value-color-light); }
+
+
+/* FIX: New Layout Grid for Canvas and Steps */
+.main-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px; /* Canvas/Controls Area | Steps (Fixed 280px) */
+    gap: 20px;
+}
+
+.main-visual-area {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-right {
+    min-height: 600px;
+}
+
+.steps-container { 
+    min-height: 250px; 
+    max-height: 100%; 
+    height: 100%; /* FIX: Ensures it stretches to the height of the canvas area */
+}
+
+.main-content-bottom {
+    margin-top: 20px;
+    grid-column: 1 / -1; /* Full width under the main grid */
+}
+
+/* --- Responsive Adjustments --- */
+
+@media (max-width: 1024px) {
+    .main-layout-grid { 
+        grid-template-columns: 1fr; 
+    }
+    .sidebar-right {
+        min-height: auto;
+        max-height: 400px;
+        order: 2; /* Steps sidebar goes below canvas */
+    }
+    .main-visual-area {
+        order: 1;
+    }
+    #tree-canvas { 
+        height: 400px; 
+    }
+    .container { padding: 10px; }
+}
