@@ -1,30 +1,27 @@
 /* --- CSS Variables for Theme and Colors --- */
 
 :root {
-    --bg-primary: #0a0814; /* Deep Indigo Dark Background (Body) */
-    --bg-secondary: #1f1d2b; /* Card/Container Background (Cards/Controls) */
-    --bg-tertiary: #3a384f; /* Input/Step Background */
-    --text-primary: #f0f4f8; /* Off-White Text */
+    --bg-primary: #0a111a; /* Very Dark Blue (Body) */
+    --bg-secondary: #1e293b; /* Card/Container Background (Slightly Lighter) */
+    --bg-tertiary: #334155; /* Input/Step Background */
+    --text-primary: #f0f4f8; 
     --text-secondary: #a3a3b0;
-    --accent: #9333ea; /* Primary Accent: Deep Purple/Indigo */
-    --accent-hover: #7e22ce;
-    --border: #524f6a;
-    --red-node: #ff6b6b; /* Vibrant Red */
-    --black-node: #3d3a4f; /* Dark Node Color */
+    --accent: #059669; /* Primary Accent: Emerald Green */
+    --accent-hover: #047857;
+    --border: #475569;
+    --red-node: #ff6b6b; /* Red Node Color */
+    --black-node: #3d3a4f;
     --null-node: #6e6c80;
     
-    /* FIX: Subheading color separate for visibility */
-    --secondary-subheading-color: #d8b4fe;
-
     /* Custom Button Colors */
-    --insert-btn: #34d399; 
-    --delete-btn: #f87171; 
-    --clear-btn: #5bc0de;
-    --step-btn: #facc15; 
+    --insert-btn: #10b981; 
+    --delete-btn: #f43f5e; 
+    --clear-btn: #3b82f6; 
 
-    --violation-color-dark: #ff6b6b;
+    --violation-color-dark: #f87171; 
     --violation-color-light: #dc2626;
     --stat-value-color-dark: var(--red-node);
+    --secondary-subheading-color: #94a3b8; 
 }
 
 /* Light Theme override for visibility */
@@ -34,18 +31,22 @@
     --bg-tertiary: #e9ecef;
     --text-primary: #212529;
     --text-secondary: #6c757d;
-    --accent: #9333ea;
-    --accent-hover: #7e22ce;
+    --accent: #059669;
+    --accent-hover: #047857;
     --border: #ced4da;
     --red-node: #ef4444;
     --black-node: #343a40;
     --null-node: #adb5bd;
     
     --stat-value-color-light: #1a1a1a; 
-    --secondary-subheading-color: #6d28d9;
+    --secondary-subheading-color: #475569;
 }
 
 /* --- Global Styles and Utility Class Overrides --- */
+
+* {
+    box-sizing: border-box;
+}
 
 body {
     background-color: var(--bg-primary); 
@@ -57,12 +58,12 @@ body {
 .container {
     width: 100%;
     margin: 0 auto;
-    padding: 1.25rem;
+    padding: 0; /* Remove top-level padding */
 }
 
 /* Header Gradient and Subheading Fix */
 .header-gradient {
-    background: linear-gradient(135deg, var(--accent), #d8b4fe); 
+    background: linear-gradient(135deg, var(--accent), #34d399); 
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -71,7 +72,7 @@ body {
     color: var(--secondary-subheading-color);
 }
 
-/* Toggle Switch Styles */
+/* Toggle Switch Styles (Unchanged) */
 .toggle {
     position: relative;
     width: 50px;
@@ -95,57 +96,98 @@ body {
 }
 .toggle.active::after { transform: translateX(24px); }
 
-.step-item.active { border-color: var(--step-btn) !important; background: #4a4e6980; }
+/* Steps/Violation Visuals */
+.step-item {
+    border-left: 4px solid var(--accent);
+    padding: 8px;
+    margin-bottom: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    white-space: pre-wrap; /* Allows multiline pseudocode to wrap */
+}
+.step-item.active { border-color: #facc15 !important; background: #4a4e6980; }
 .violation { color: var(--violation-color-dark); font-weight: bold; }
+
+#stepsDisplay { color: var(--text-primary); }
 
 /* Statistics Color Overrides */
 .stat-item .value { color: var(--stat-value-color-dark); }
 .light-theme .stat-item .value { color: var(--stat-value-color-light); }
 
 
-/* FIX: New Layout Grid for Canvas and Steps */
-.main-layout-grid {
-    display: grid;
-    grid-template-columns: 1fr 280px; /* Canvas/Controls Area | Steps (Fixed 280px) */
-    gap: 20px;
+/* Layouts */
+
+.top-header-area {
+    padding: 1rem;
+    padding-bottom: 0;
+}
+.controls-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    padding: 15px;
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    margin-bottom: 15px;
 }
 
-.main-visual-area {
+/* FIX: MAIN CONTENT GRID */
+.main-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px; /* Canvas/Steps Area | Stats (Fixed 280px) */
+    gap: 15px;
+    padding: 0 1rem 1rem 1rem;
+    align-items: start;
+}
+.canvas-area {
     display: flex;
     flex-direction: column;
 }
-
 .sidebar-right {
     min-height: 600px;
 }
-
 .steps-container { 
-    min-height: 250px; 
-    max-height: 100%; 
-    height: 100%; /* FIX: Ensures it stretches to the height of the canvas area */
+    height: 600px; 
+    overflow-y: auto;
+}
+
+#tree-canvas { 
+    height: 400px; /* FIX: Reduced height */
 }
 
 .main-content-bottom {
+    grid-column: 1 / -1; /* Spans full width under the main grid */
     margin-top: 20px;
-    grid-column: 1 / -1; /* Full width under the main grid */
+    padding: 0 1rem;
+}
+
+.stats-and-guarantees-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns for stats/guarantees */
+    gap: 20px;
 }
 
 /* --- Responsive Adjustments --- */
 
 @media (max-width: 1024px) {
-    .main-layout-grid { 
-        grid-template-columns: 1fr; 
+    .main-content-grid {
+        grid-template-columns: 1fr; /* Stack canvas and sidebar */
+        padding: 0 10px 10px 10px;
+    }
+    .steps-container {
+        height: 400px; /* Max height for mobile steps */
     }
     .sidebar-right {
         min-height: auto;
-        max-height: 400px;
         order: 2; /* Steps sidebar goes below canvas */
-    }
-    .main-visual-area {
-        order: 1;
     }
     #tree-canvas { 
         height: 400px; 
+        order: 1; 
     }
-    .container { padding: 10px; }
+    .stats-and-guarantees-grid {
+        grid-template-columns: 1fr;
+    }
 }
