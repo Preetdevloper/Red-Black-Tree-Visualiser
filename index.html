@@ -13,44 +13,44 @@
             <h1 class="text-3xl sm:text-4xl font-extrabold mb-1 header-gradient">
                 Red-Black Tree Visualizer
             </h1>
-            <p class="text-secondary-subheading text-sm">Interactive visualization tool for efficient self-balancing trees</p>
+            <p class="text-secondary-subheading text-sm mt-1">Interactive visualization tool for efficient self-balancing trees</p>
         </header>
 
-        <div class="main-layout-grid">
-            <div class="main-visual-area">
-                
-                <div class="controls flex flex-wrap gap-4 justify-center items-center mb-5 p-5 rounded-xl bg-secondary shadow-lg">
-                    
-                    <input type="number" id="nodeValue" placeholder="Value" min="1" max="999" 
-                           class="p-2 border-2 rounded-lg bg-tertiary text-primary w-24 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent"
-                           style="border-color: var(--border);">
-                    
-                    <button onclick="insertNode()" 
-                            class="py-2 px-4 rounded-lg font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-xl"
-                            style="background: var(--insert-btn); color: white;">Insert</button>
-                    
-                    <button onclick="deleteNode()" 
-                            class="py-2 px-4 rounded-lg font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:-shadow-xl"
-                            style="background: var(--delete-btn); color: white;">Delete</button>
-                    
-                    <button onclick="clearTree()" 
-                            class="py-2 px-4 rounded-lg font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-xl"
-                            style="background: var(--clear-btn); color: white;">Clear Tree</button>
-
-                    <div class="toggle-group flex gap-2 items-center">
-                        <span class="text-sm">Show Null Nodes</span>
-                        <div class="toggle" id="nullToggle" onclick="toggleNullNodes()"></div>
-                    </div>
-                    <div class="toggle-group flex gap-2 items-center">
-                        <span role="img" aria-label="dark mode">🌙</span>
-                        <div class="toggle" id="themeToggle" onclick="toggleTheme()"></div>
-                        <span role="img" aria-label="light mode">☀️</span>
-                    </div>
-                </div>
-
-                <canvas id="tree-canvas" class="w-full h-[600px] bg-secondary rounded-xl shadow-lg"></canvas>
-            </div>
+        <div class="controls flex flex-wrap gap-4 justify-center items-center mb-5 p-5 rounded-xl bg-secondary shadow-lg">
             
+            <input type="number" id="nodeValue" placeholder="Value" min="1" max="999" 
+                   class="p-2 border-2 rounded-lg bg-tertiary text-primary w-24 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent"
+                   style="border-color: var(--border);">
+            
+            <button onclick="insertNode()" 
+                    class="py-2 px-4 rounded-lg font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-xl"
+                    style="background: var(--insert-btn); color: white;">Insert</button>
+            
+            <button onclick="deleteNode()" 
+                    class="py-2 px-4 rounded-lg font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-xl"
+                    style="background: var(--delete-btn); color: white;">Delete</button>
+            
+            <button onclick="clearTree()" 
+                    class="py-2 px-4 rounded-lg font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:-shadow-xl"
+                    style="background: var(--clear-btn); color: white;">Clear Tree</button>
+
+            <div class="toggle-group flex gap-2 items-center">
+                <span class="text-sm">Show Null Nodes</span>
+                <div class="toggle" id="nullToggle" onclick="toggleNullNodes()"></div>
+            </div>
+            <div class="toggle-group flex gap-2 items-center">
+                <span role="img" aria-label="dark mode">🌙</span>
+                <div class="toggle" id="themeToggle" onclick="toggleTheme()"></div>
+                <span role="img" aria-label="light mode">☀️</span>
+            </div>
+        </div>
+        
+        <div class="main-content-grid">
+            
+            <div class="canvas-area">
+                <canvas id="tree-canvas" class="w-full h-full bg-secondary rounded-xl shadow-lg"></canvas>
+            </div>
+
             <div class="sidebar-right">
                 <div class="steps-container bg-secondary p-5 rounded-xl shadow-lg flex-grow overflow-y-auto">
                     <h3 class="steps-title text-lg font-semibold mb-3" style="color: var(--accent);">
@@ -64,39 +64,44 @@
         <div class="main-content-bottom">
             <div class="info-card bg-secondary p-5 rounded-xl shadow-lg">
                 <h3 class="text-lg font-semibold mb-3 border-b-2 pb-1" style="color: var(--accent); border-color: var(--border);">
-                    📊 Tree Statistics
+                    📊 Tree Statistics & Guarantees
                 </h3>
-                <div class="stats-grid grid grid-cols-2 gap-3 mb-4">
-                    <div class="stat-item flex flex-col items-center justify-center p-2 rounded-lg" style="background: var(--bg-tertiary); border: 1px solid var(--border);">
-                        <span class="label text-xs" style="color: var(--text-secondary);">Total Nodes</span>
-                        <span class="value text-xl font-bold" id="nodeCount">0</span>
-                    </div>
-                    <div class="stat-item flex flex-col items-center justify-center p-2 rounded-lg" style="background: var(--bg-tertiary); border: 1px solid var(--border);">
-                        <span class="label text-xs" style="color: var(--text-secondary);">Tree Height</span>
-                        <span class="value text-xl font-bold" id="treeHeight">0</span>
-                    </div>
-                    <div class="stat-item flex flex-col items-center justify-center p-2 rounded-lg" style="background: var(--bg-tertiary); border: 1px solid var(--border);">
-                        <span class="label text-xs" style="color: var(--text-secondary);">Black Height</span>
-                        <span class="value text-xl font-bold" id="blackHeight">0</span>
-                    </div>
-                    <div class="stat-item flex flex-col items-center justify-center p-2 rounded-lg" style="background: var(--bg-tertiary); border: 1px solid var(--border);">
-                        <span class="label text-xs" style="color: var(--text-secondary);">Max Nodes @Height</span>
-                        <span class="value text-lg font-bold" style="color: var(--accent);">2<sup>h</sup> - 1</span>
-                    </div>
-                </div>
                 
-                <h3 class="text-lg font-semibold mb-3 border-b-2 pb-1" style="color: var(--accent); border-color: var(--border);">
-                    💡 RB Tree Guarantees
-                </h3>
-                <ul class="list-none p-0 text-sm">
-                    <li class="pb-2 border-b-0" style="color: var(--text-secondary);">1. Every node is either red or black</li>
-                    <li class="pb-2 border-b-0" style="color: var(--text-secondary);">2. Root is always black</li>
-                    <li class="pb-2 border-b-0" style="color: var(--text-secondary);">3. All null leaves are black</li>
-                    <li class="pb-2 border-b-0" style="color: var(--text-secondary);">4. Red nodes have black children</li>
-                    <li class="pb-2 border-b-0" style="color: var(--text-secondary);">5. All paths have same black height</li>
-                </ul>
-                <div class="tree-formula mt-3 pt-2 border-t dashed italic text-xs" style="color: var(--text-secondary); border-color: var(--border);">
-                    Tree Height ≤ 2 × Log₂(n + 1)
+                <div class="stats-and-guarantees-grid">
+                    <div class="stats-box">
+                        <div class="stats-grid grid grid-cols-2 gap-3 mb-4">
+                            <div class="stat-item p-2 rounded-lg" style="background: var(--bg-tertiary); border: 1px solid var(--border);">
+                                <span class="label text-xs" style="color: var(--text-secondary);">Total Nodes</span>
+                                <span class="value text-xl font-bold" id="nodeCount">0</span>
+                            </div>
+                            <div class="stat-item p-2 rounded-lg" style="background: var(--bg-tertiary); border: 1px solid var(--border);">
+                                <span class="label text-xs" style="color: var(--text-secondary);">Tree Height</span>
+                                <span class="value text-xl font-bold" id="treeHeight">0</span>
+                            </div>
+                            <div class="stat-item p-2 rounded-lg" style="background: var(--bg-tertiary); border: 1px solid var(--border);">
+                                <span class="label text-xs" style="color: var(--text-secondary);">Black Height</span>
+                                <span class="value text-xl font-bold" id="blackHeight">0</span>
+                            </div>
+                            <div class="stat-item p-2 rounded-lg" style="background: var(--bg-tertiary); border: 1px solid var(--border);">
+                                <span class="label text-xs" style="color: var(--text-secondary);">Max Nodes @Height</span>
+                                <span class="value text-lg font-bold" style="color: var(--accent);">2<sup>h</sup> - 1</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="guarantees-box">
+                        <div class="text-sm font-medium mb-1" style="color: var(--text-primary);">Properties:</div>
+                        <ul class="list-none p-0 text-sm mb-4">
+                            <li style="color: var(--text-secondary);">1. Every node is either red or black</li>
+                            <li style="color: var(--text-secondary);">2. Root is always black</li>
+                            <li style="color: var(--text-secondary);">3. All null leaves are black</li>
+                            <li style="color: var(--text-secondary);">4. Red nodes have black children</li>
+                            <li style="color: var(--text-secondary);">5. All paths have same black height</li>
+                        </ul>
+                        <div class="tree-formula italic text-xs" style="color: var(--text-secondary); border-radius: 4px;">
+                            Height ≤ 2 × log₂(N + 1)
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
