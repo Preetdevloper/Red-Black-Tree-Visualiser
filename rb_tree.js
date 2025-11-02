@@ -103,7 +103,7 @@ class RedBlackTree {
          
          const historySteps = this.history.map((h, index) => {
              const step = h.stepMessage;
-             const isViolation = step.toLowerCase().includes('case') || step.toLowerCase().includes('fix-up') || step.toLowerCase().includes('recolor');
+             const isViolation = step.toLowerCase().includes('case') || step.toLowerCase().includes('fix-up') || step.toLowerCase().includes('recolor') || step.toLowerCase().includes('rotate');
              const isActive = index === this.currentStepIndex ? 'active' : '';
              return `<div class="step-item ${isViolation ? 'violation' : ''} ${isActive}">${step}</div>`;
          }).join('');
@@ -182,7 +182,7 @@ class RedBlackTree {
         if (!this.root) {
             this.root = newNode;
             this.root.color = 'BLACK';
-            this.saveState('Tree was empty, inserted as black root. Fix-up complete.');
+            this.saveState(`Root: ${newNode.value} inserted as BLACK. Fix-up complete.`);
             
             drawTree(); 
             this.nodeToFix = null;
@@ -212,7 +212,7 @@ class RedBlackTree {
             parent.right = newNode;
         }
         
-        this.saveState(`Inserted ${value} as RED node. Starting fix-up.`);
+        this.saveState(`Inserted ${value} as RED node (z). Starting fix-up.`);
         
         // AUTOPLAY START
         setTimeout(() => {
@@ -250,12 +250,12 @@ class RedBlackTree {
         if (!z.left) {
             xParent = z.parent;
             xSide = (z === z.parent?.left) ? 'left' : 'right';
-            this.saveState(`Node ${z.value} has no left child. Replacing with right child.`);
+            this.saveState(`Pre-Delete: Node ${z.value} has no left child. Replacing with right child.`);
             this.transplant(z, z.right);
         } else if (!z.right) {
             xParent = z.parent;
             xSide = (z === z.parent?.left) ? 'left' : 'right';
-            this.saveState(`Node ${z.value} has no right child. Replacing with left child.`);
+            this.saveState(`Pre-Delete: Node ${z.value} has no right child. Replacing with left child.`);
             this.transplant(z, z.left);
         } else {
             y = this.minimum(z.right);
@@ -263,16 +263,16 @@ class RedBlackTree {
             xParent = y.parent;
             xSide = 'right';
 
-            this.saveState(`Successor ${y.value} found.`);
+            this.saveState(`Pre-Delete: Successor ${y.value} found.`);
 
             if (y.parent !== z) {
-                this.saveState(`Successor not direct child. Transplanting ${y.value}'s right child.`);
+                this.saveState(`Pre-Delete: Transplanting ${y.value}'s right child to fill successor hole.`);
                 this.transplant(y, y.right);
                 y.right = z.right;
                 if (y.right) y.right.parent = y;
             }
             
-            this.saveState(`Transplanting ${z.value} with successor ${y.value}.`);
+            this.saveState(`Pre-Delete: Transplanting ${z.value} with successor ${y.value}.`);
             this.transplant(z, y);
             y.left = z.left;
             y.left.parent = y;
@@ -360,7 +360,13 @@ class RedBlackTree {
                 if (uncle) uncle.color = 'BLACK';
                 grandparent.color = 'RED';
                 this.nodeToFix = grandparent;
-                this.saveState(`Case 1: Recolor parent, uncle, and grandparent ${this.nodeToFix.value}.`);
+                this.saveState(`
+Case 1: Parent and Uncle are RED.
+1. Recolor parent $\leftarrow$ BLACK.
+2. Recolor uncle $\leftarrow$ BLACK.
+3. Recolor grandparent $\leftarrow$ RED.
+4. Set $z \leftarrow$ grandparent.
+`);
                 this.updateDisplay();
                 return true;
 
@@ -369,13 +375,21 @@ class RedBlackTree {
                     // Case 2 (Left-Right/Triangle case)
                     this.rotateLeft(node.parent); 
                     this.nodeToFix = node.left; 
-                    this.saveState(`Case 2: Left-Rotate on parent ${node.value}. Transition to Case 3.`);
+                    this.saveState(`
+Case 2 (Left-Right): Parent is RED, Uncle is BLACK, $z$ is inner child.
+1. Left-Rotate on parent (z.p).
+2. Set $z \leftarrow$ former parent.
+`);
                     node = this.search(this.root, this.nodeToFix.value) || this.nodeToFix; 
                 } else if (!isParentLeft && node === node.parent.left) {
                      // Case 2 (Right-Left/Triangle case)
                     this.rotateRight(node.parent);
                     this.nodeToFix = node.right;
-                    this.saveState(`Case 2: Right-Rotate on parent ${node.value}. Transition to Case 3.`);
+                    this.saveState(`
+Case 2 (Right-Left): Parent is RED, Uncle is BLACK, $z$ is inner child.
+1. Right-Rotate on parent (z.p).
+2. Set $z \leftarrow$ former parent.
+`);
                     node = this.search(this.root, this.nodeToFix.value) || this.nodeToFix;
                 }
                 
@@ -385,10 +399,22 @@ class RedBlackTree {
                 
                 if (node.parent === node.parent.parent.left) {
                     this.rotateRight(node.parent.parent); 
-                    this.saveState(`Case 3: Right-Rotate on grandparent ${node.parent.value}. Fix-up complete.`);
+                    this.saveState(`
+Case 3 (Left-Left): Parent is RED, Uncle is BLACK, $z$ is outer child.
+1. Recolor parent $\leftarrow$ BLACK.
+2. Recolor grandparent $\leftarrow$ RED.
+3. Right-Rotate on grandparent (z.p.p).
+4. Fix-up complete.
+`);
                 } else {
                     this.rotateLeft(node.parent.parent); 
-                    this.saveState(`Case 3: Left-Rotate on grandparent ${node.parent.value}. Fix-up complete.`);
+                    this.saveState(`
+Case 3 (Right-Right): Parent is RED, Uncle is BLACK, $z$ is outer child.
+1. Recolor parent $\leftarrow$ BLACK.
+2. Recolor grandparent $\leftarrow$ RED.
+3. Left-Rotate on grandparent (z.p.p).
+4. Fix-up complete.
+`);
                 }
 
                 this.nodeToFix = null;
@@ -426,10 +452,22 @@ class RedBlackTree {
             parent.color = 'RED';
             if (isXLeft) {
                 this.rotateLeft(parent);
-                this.saveState(`Case 1: Sibling ${sibling.value} is RED. Left-Rotate on parent.`);
+                this.saveState(`
+Case 1: Sibling (w) is RED.
+1. Recolor w $\leftarrow$ BLACK.
+2. Recolor p $\leftarrow$ RED.
+3. LEFT-ROTATE(T, p).
+4. New sibling found. Repeat fixup.
+`);
             } else {
                 this.rotateRight(parent);
-                this.saveState(`Case 1: Sibling ${sibling.value} is RED. Right-Rotate on parent.`);
+                this.saveState(`
+Case 1: Sibling (w) is RED.
+1. Recolor w $\leftarrow$ BLACK.
+2. Recolor p $\leftarrow$ RED.
+3. RIGHT-ROTATE(T, p).
+4. New sibling found. Repeat fixup.
+`);
             }
             this.updateDisplay();
             return true;
@@ -446,54 +484,82 @@ class RedBlackTree {
             if (parent.color === 'RED') {
                 parent.color = 'BLACK';
                 this.nodeToFix = null; 
-                this.saveState(`Case 2: Sibling and children BLACK. Parent ${parent.value} was RED, recolored BLACK. Fix-up complete.`);
+                this.saveState(`
+Case 2: Sibling (w) and children are BLACK. Parent is RED.
+1. Recolor w $\leftarrow$ RED.
+2. Recolor p $\leftarrow$ BLACK.
+3. Fix-up complete.
+`);
                 this.updateDisplay();
                 return false;
             } else {
                 this.nodeToFix = parent; 
-                this.saveState(`Case 2: Sibling and children BLACK. Recolor sibling RED. Propagate double-black to parent ${parent.value}.`);
+                this.saveState(`
+Case 2: Sibling (w) and children are BLACK. Parent is BLACK.
+1. Recolor w $\leftarrow$ RED.
+2. Propagate double-black to parent ($x \leftarrow p$).
+`);
                 this.updateDisplay();
                 return true; 
             }
         }
 
-        // Case 3/4 involves colored children.
-        
         // Case 3: Sibling is BLACK, near child is RED, far child is BLACK
         if (isXLeft && sLeft && sLeft.color === 'RED' && (!sRight || sRight.color === 'BLACK')) {
             sLeft.color = 'BLACK';
             sibling.color = 'RED';
             this.rotateRight(sibling);
-            this.saveState(`Case 3: Sibling near child ${sLeft.value} is RED. Right-Rotate on sibling.`);
+            this.saveState(`
+Case 3 (L-R): Near child (w.left) is RED.
+1. Recolor w.left $\leftarrow$ BLACK, w $\leftarrow$ RED.
+2. RIGHT-ROTATE(T, w).
+3. Now in Case 4 setup.
+`);
             this.updateDisplay();
             return true;
         } else if (!isXLeft && sRight && sRight.color === 'RED' && (!sLeft || sLeft.color === 'BLACK')) {
             sRight.color = 'BLACK';
             sibling.color = 'RED';
             this.rotateLeft(sibling);
-            this.saveState(`Case 3: Sibling near child ${sRight.value} is RED. Left-Rotate on sibling.`);
+            this.saveState(`
+Case 3 (R-L): Near child (w.right) is RED.
+1. Recolor w.right $\leftarrow$ BLACK, w $\leftarrow$ RED.
+2. LEFT-ROTATE(T, w).
+3. Now in Case 4 setup.
+`);
             this.updateDisplay();
             return true;
         }
         
-        // Re-fetch sibling pointers if Case 3 occurred immediately prior
+        // Case 4: Sibling is BLACK, far child is RED (Termination)
+        
+        // Re-fetch sibling pointers
         sibling = isXLeft ? parent.right : parent.left;
         sLeft = sibling?.left;
         sRight = sibling?.right;
 
-        // Case 4: Sibling is BLACK, far child is RED (Termination)
         if (isXLeft) {
             sibling.color = parent.color;
             parent.color = 'BLACK';
             if (sRight) sRight.color = 'BLACK';
             this.rotateLeft(parent);
-            this.saveState(`Case 4: Sibling far child is RED. Final rotation (Left-Rotate on parent). Fix-up complete.`);
+            this.saveState(`
+Case 4 (L-L): Far child (w.right) is RED.
+1. Recolor w $\leftarrow$ p.color, p $\leftarrow$ BLACK.
+2. Recolor w.right $\leftarrow$ BLACK.
+3. LEFT-ROTATE(T, p). Fix-up complete.
+`);
         } else {
             sibling.color = parent.color;
             parent.color = 'BLACK';
             if (sLeft) sLeft.color = 'BLACK';
             this.rotateRight(parent);
-            this.saveState(`Case 4: Sibling far child is RED. Final rotation (Right-Rotate on parent). Fix-up complete.`);
+            this.saveState(`
+Case 4 (R-R): Far child (w.left) is RED.
+1. Recolor w $\leftarrow$ p.color, p $\leftarrow$ BLACK.
+2. Recolor w.left $\leftarrow$ BLACK.
+3. RIGHT-ROTATE(T, p). Fix-up complete.
+`);
         }
 
         this.nodeToFix = null;
